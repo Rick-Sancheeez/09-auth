@@ -3,7 +3,6 @@
 import css from './SignUp.module.css';
 
 import { isAxiosError } from 'axios';
-import { logErrorResponse } from '@/app/api/_utils/utils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { register, RegisterRequest } from '@/lib/api/clientApi';
@@ -28,20 +27,12 @@ const SignUp = () => {
         setError('Invalid email or password');
       }
     } catch (err) {
-          if (isAxiosError(err)) {
-            logErrorResponse(err);
-            const serverMessage = err.response?.data?.message || 'Login failed';
-            const status = err.response?.status;
-    
-            setError(serverMessage);
-            return { message: serverMessage, status };
-          }
-    
-        
-          const genericMessage = err instanceof Error ? err.message : 'An error occurred';
-          setError(genericMessage);
-          return { message: genericMessage, status: 500 };
-        }
+      if (isAxiosError(err)) {
+        setError(err.response?.data?.error ?? 'Registration failed');
+      } else {
+        setError('Unexpected error');
+      }
+    } 
   };
 
   return (

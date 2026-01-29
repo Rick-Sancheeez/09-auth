@@ -29,21 +29,11 @@ const SignIn = () => {
       }
     } catch (err) {
       if (isAxiosError(err)) {
-        logErrorResponse(err);
-        const serverMessage = err.response?.data?.message || 'Login failed';
-        const status = err.response?.status;
-
-        setError(serverMessage);
-        return { message: serverMessage, status };
+        setError(err.response?.data?.error ?? 'Registration failed');
+      } else {
+        setError('Unexpected error');
       }
-
-      // 2. Обробка звичайних помилок (щоб не пропустити статус у всіх випадках)
-      const genericMessage = err instanceof Error ? err.message : 'An error occurred';
-      setError(genericMessage);
-      return { message: genericMessage, status: 500 };
-    }
-
-
+    } 
   };
 
   return (
