@@ -2,10 +2,11 @@
 
 import css from './SignUp.module.css';
 
+import { isAxiosError } from 'axios';
+import { logErrorResponse } from '@/app/api/_utils/utils';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { register, RegisterRequest } from '@/lib/api/clientApi';
-import { ApiError } from '@/app/api/api';
 import { useAuthStore } from '@/lib/store/authStore';
 
 
@@ -17,25 +18,30 @@ const SignUp = () => {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-	    // Типізуємо дані форми
       const formValues = Object.fromEntries(formData) as RegisterRequest;
-      // Виконуємо запит
-      console.log(formValues);
       const res = await register(formValues);
-      // Виконуємо редірект або відображаємо помилку
+    
       if (res) {
         setUser(res);
         router.push('/profile');
       } else {
         setError('Invalid email or password');
       }
-    } catch (error) {
-      setError(
-        (error as ApiError).response?.data?.error ??
-          (error as ApiError).message ??
-          'Oops... some error'
-      )
-    }
+    } catch (err) {
+          if (isAxiosError(err)) {
+            logErrorResponse(err);
+            const serverMessage = err.response?.data?.message || 'Login failed';
+            const status = err.response?.status;
+    
+            setError(serverMessage);
+            return { message: serverMessage, status };
+          }
+    
+        
+          const genericMessage = err instanceof Error ? err.message : 'An error occurred';
+          setError(genericMessage);
+          return { message: genericMessage, status: 500 };
+        }
   };
 
   return (

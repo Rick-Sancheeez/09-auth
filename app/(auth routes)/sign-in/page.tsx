@@ -1,4 +1,4 @@
-// sapp/(public routes)/sign-in/page.tsx
+// app/(public routes)/sign-in/page.tsx
 
 'use client';
 
@@ -7,8 +7,9 @@ import css from './SignIn.module.css';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { login, LoginRequest } from '@/lib/api/clientApi';
-import { ApiError } from '@/app/api/api';
 import { useAuthStore } from '@/lib/store/authStore';
+import { isAxiosError } from 'axios';
+import { logErrorResponse } from '@/app/api/_utils/utils';
 
 const SignIn = () => {
   const router = useRouter();
@@ -22,19 +23,29 @@ const SignIn = () => {
       const res = await login(formValues);
       if (res) {
         setUser(res);
-        
         router.push('/profile');
       } else {
         setError('Invalid email or password');
       }
-    } catch (error) {
-      setError(
-        (error as ApiError).response?.data?.error ??
-          (error as ApiError).message ??
-          'Oops... some error'
-      )
+    } catch (err) {
+      if (isAxiosError(err)) {
+        logErrorResponse(err);
+        const serverMessage = err.response?.data?.message || 'Login failed';
+        const status = err.response?.status;
+
+        setError(serverMessage);
+        return { message: serverMessage, status };
+      }
+
+      // 2. Обробка звичайних помилок (щоб не пропустити статус у всіх випадках)
+      const genericMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(genericMessage);
+      return { message: genericMessage, status: 500 };
     }
+
+
   };
+
   return (
     <main className={css.mainContent}>
     <form className={css.form} action={handleSubmit}>
