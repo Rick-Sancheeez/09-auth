@@ -46,16 +46,7 @@ const AuthProvider = ({ children }: Props) => {
     initAuth();
   }, [setUser, setAuthenticated, clearAuth]);
 
-  // Поки ми не знаємо, залогінений юзер чи ні — краще нічого не рендерити 
-  // або показати спінер/логотип, щоб уникнути "миготіння" контенту
-  if (isHydrating) {
-    return (
-      <div className="flex items-center justify-center min-vh-100">
-        <p>Loading session...</p> 
-        {/* Тут може бути твій Spinner компонент */}
-      </div>
-    );
-  }
+
 
   return children;
 };
