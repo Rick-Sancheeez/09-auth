@@ -1,10 +1,5 @@
 export type User = {
-  id: string;
   email: string;
-  userName?: string;
-  photoUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name?: string;
-  avatar?: string;
+  username: string;
+  avatar: string;
 };

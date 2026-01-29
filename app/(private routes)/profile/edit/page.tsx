@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/authStore';
-import axios from 'axios';
+//import axios from 'axios';
 import css from './EditPage.module.css';
+import { updateUserProfile } from '@/lib/api/clientApi';
 
 const EditProfilePage = () => {
   const router = useRouter();
@@ -15,8 +16,8 @@ const EditProfilePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (user?.name) {
-      setUsername(user.name);
+    if (user?.username) {
+      setUsername(user.username);
     }
   }, [user]);
 
@@ -27,14 +28,13 @@ const EditProfilePage = () => {
     try {
       setIsSubmitting(true);
       
-      const { data } = await axios.patch('/api/users/me', {
-        name: username,
+      const updatedUser = await updateUserProfile({
+        username: username,
       });
-
-      // Оновлюємо Zustand новими даними від бекенда
-      setUser(data);
       
-      // Перенаправлення на профіль
+      setUser(updatedUser);
+      
+      
       router.push('/profile');
     } catch (error) {
       console.error('Failed to update profile:', error);
@@ -86,7 +86,7 @@ const EditProfilePage = () => {
             <button 
               type="submit" 
               className={css.saveButton}
-              disabled={isSubmitting || username === user.name}
+              disabled={isSubmitting || username === user.username}
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>

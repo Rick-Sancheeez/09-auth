@@ -1,14 +1,29 @@
-'use client';
+
 
 import css from './Profile.module.css';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Metadata } from 'next';
 
-import {useAuthStore} from '@/lib/store/authStore';
+import { getMeServer } from '@/lib/api/serverApi';
 
-export default function Profile() {
-    const user = useAuthStore((state) => state.user);
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const user = await getMeServer();
+    return {
+      title: `${user.username}'s Profile`,
+      description: `View and edit profile details for ${user.username}`,
+    };
+  } catch (error) {
+    return {
+      title: 'Profile | NoteHub',
+    };
+  }
+}
+
+export default async function Profile() {
+    const user = await getMeServer();
 
     return (
         <main className={css.mainContent}>
@@ -20,21 +35,21 @@ export default function Profile() {
                 </Link>
             </div>
             <div className={css.avatarWrapper}>
-           {/* <Image
-                src="Avatar"
+           <Image
+                src={user.avatar }
                 alt="User Avatar"  
                 width={120}
                 height={120} 
                 className={css.avatar}
-            /> */}
+            /> 
             </div>
             <div className={css.profileInfo}>
-            <p>
-                Username: {user?.userName}
-            </p>
-            <p>
-                Email: {user?.email}
-            </p>
+                <p>
+                    Username: {user?.username}
+                </p>
+                <p>
+                    Email: {user?.email}
+                </p>
             </div>
         </div>
         </main>

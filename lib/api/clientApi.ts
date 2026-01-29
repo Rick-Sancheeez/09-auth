@@ -5,7 +5,7 @@ import type { User } from '@/types/user';
 export type RegisterRequest = {
   email: string;
   password: string;
-  userName: string;
+  username: string;
 };
 
 
@@ -41,7 +41,12 @@ export const getMe = async () => {
   return data;
 };
 
-export async function fetchNotes(page: number = 1, tag?: string, query: string | undefined = undefined) {
+export const updateUserProfile = async (userData: { username: string }) => {
+  const { data } = await nextServer.patch<User>('/users/me', userData);
+  return data;
+};
+
+export async function fetchNotes(page: number = 1, tag?: string, query: string = '') {
     const res = await nextServer.get<FetchNotesResponse>('/notes', {
         params: {
             search: query,

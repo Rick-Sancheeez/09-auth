@@ -22,7 +22,7 @@ export default function NotesPageClient({
   tag,
 }: Props) {
   const [page, setPage] = useState(1);
-  const [query, setQuery] = useState<string | undefined>(undefined);
+  const [query, setQuery] = useState<string>('');
 
   const { data } = useQuery({
     queryKey: ["notes", page, tag, query],
@@ -55,7 +55,7 @@ export default function NotesPageClient({
         /> )} 
       </div>
 
-      {data && data.notes.length >= 1 && (<NoteList notes={data.notes} />) }
+      {data && data.totalPages > 1 && (<NoteList notes={data.notes} />) }
   </div>
   );
 }
