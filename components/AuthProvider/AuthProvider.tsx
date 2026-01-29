@@ -2,7 +2,7 @@
 
 import { checkSession, getMe } from '@/lib/api/clientApi';
 import { useAuthStore } from '@/lib/store/authStore';
-import { useEffect, useState } from 'react';
+import { useEffect,  } from 'react';
 
 type Props = {
   children: React.ReactNode;
@@ -13,9 +13,7 @@ const AuthProvider = ({ children }: Props) => {
   const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
   const clearAuth = useAuthStore((state) => state.clearIsAuthenticated);
   
-  // Додаємо локальний стан завантаження
-  const [isHydrating, setIsHydrating] = useState(true);
-
+ 
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -37,10 +35,7 @@ const AuthProvider = ({ children }: Props) => {
       } catch (error) {
         console.error('Auth initialization failed:', error);
         clearAuth();
-      } finally {
-        // 3. Коли перевірка завершена, прибираємо екран завантаження
-        setIsHydrating(false);
-      }
+      } 
     };
 
     initAuth();
